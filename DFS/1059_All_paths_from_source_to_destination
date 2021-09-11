@@ -1,0 +1,53 @@
+class Solution:
+    
+    # First we define the colors
+    # We will be using Coloring algorithm
+    # White is unprocessed graph node
+    # GRAY is graph node in processing
+    # BLACK is processed graph node
+    WHITE = 0
+    GRAY = 1
+    BLACK = 2
+    
+    def leadsToDestination(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+        graph = self.buildDiGraph(n, edges);
+        result = self.leadsToDestDfs(graph, source, destination, [None] * n)
+        return result 
+        
+    def buildDiGraph(self, n, edges):
+        graph = [[]for _ in range(n)]
+        for edge in edges:
+            graph[edge[0]].append(edge[1])
+        
+        return graph
+        
+    def leadsToDestDfs(self, graph: List[List[int]], node:int, dest:int, states):
+    
+        # if the graph color is GRAY , meaning it is a node in processing, 
+        # if we ever have a processing node's neighbor/child lead back to itself,
+        # then we have a loop. 
+        # A loop in Directed graph means we will a have infinite number of ways 
+        # to reach the destination, which contradicts the definition.
+        if states[int(node)] != None:
+            return states[node] == Solution.BLACK
+        
+        # If we found a node with no neighbor, hence a leaf node,
+        # we expect it to be destination.
+        if len(graph[node]) == 0:
+            return node == dest
+        
+        # Mark the node as GRAY as we start processing it.
+        states[node] = Solution.GRAY
+        
+        for next_node in graph[node]:
+            
+            # If any of the next_node return False, then we shortcircuit and return False 
+            # as well
+            if not self.leadsToDestDfs(graph, next_node, dest, states):
+                return False
+        
+        states[node] = Solution.BLACK
+        return True
+    
+    
+        
