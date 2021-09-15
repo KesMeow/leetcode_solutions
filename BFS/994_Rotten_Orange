@@ -1,0 +1,69 @@
+class Solution {
+    
+    private static final int[][] dirs = new int[][]{{-1,0}, {1,0}, {0, 1}, {0, -1}};
+    public int orangesRotting(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        if (m == 0) return 0;
+        Queue<int[]> rotten = new ArrayDeque<>();
+        int freshCount = 0;
+        // Add the starting point to the queue
+        for (int i = 0; i < m; i++){
+            for (int j = 0; j < n; j++){
+                // Count the number of fresh orange in initial state.
+                if (grid[i][j] == 1) freshCount += 1;
+                // Push the rotten oranges a.k.a starting points of BFS 
+                // into the queue for BFS traversal. 
+                if (grid[i][j] == 2){
+                    rotten.add(new int[] {i, j});
+                }
+            }
+        }
+        
+        // Sanity Check, if freshCount is 0 then we are done, just return 0.
+        if (freshCount == 0) return 0;
+        
+        int minutePassed = -1;
+        while (!rotten.isEmpty()){
+            // increase the counter for each round of traversal. 
+            minutePassed += 1;
+            // Get the number of all starting points for later traversal.
+            int qSize = rotten.size();
+            // BFS exploration of neighbours for all starting point.
+            for (int i = 0; i < qSize; i++){
+                // get the coordinate
+                int[] cell = rotten.poll();
+                int row = cell[0];
+                int col = cell[1];
+                // Check the neigbours, if neighbours have fresh orange,
+                // change it to rotten orange and decrease the number of fresh Orange.
+                for (int [] neighbour : getNeighbours(grid, row, col)){
+                    int neighbourRow = neighbour[0];
+                    int neighbourCol = neighbour[1];
+                    
+                    rotten.add(new int[] {neighbourRow, neighbourCol});
+                    grid[neighbourRow][neighbourCol] = 2;
+                    freshCount --;
+                }
+                
+            }
+            
+           
+        }
+         if (freshCount != 0) return -1;
+        return minutePassed; 
+    }
+    
+    private List<int[]> getNeighbours(int[][] grid, int row, int col){
+        List<int[]> neighbours = new ArrayList<>();
+        for (int[] dir : dirs){
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            if (newRow < 0 || newRow >= grid.length || newCol < 0 || newCol >= grid[0].length || grid[newRow][newCol] != 1){
+                continue;
+            }
+            neighbours.add(new int[]{newRow, newCol});
+        }
+        return neighbours;
+    }
+}
