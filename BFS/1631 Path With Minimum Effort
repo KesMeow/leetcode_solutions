@@ -1,0 +1,36 @@
+class Solution:
+    def minimumEffortPath(self, heights: List[List[int]]) -> int:
+        left = 0
+        right = 1000000
+
+        while left < right:
+            mid = (left + right) // 2
+            if self.destinationReachable(mid, heights):
+                right = mid
+            else:
+                left = mid + 1
+        return left 
+    
+    def destinationReachable(self, numDifference, height):
+        row = len(height)
+        col = len(height[0])
+        visited = [[False] * col for _ in range(row)]
+        queue = [(0, 0)]
+        
+
+        while queue:
+            x, y = queue.pop(0)
+            visited[x][y] = True
+            if x == row - 1 and y == col - 1:
+                return True
+            for dx, dy in [[-1, 0], [1, 0], [0, 1], [0, -1]]:
+                adjacent_x = x + dx 
+                adjacent_y = y + dy
+                if 0 <= adjacent_x < row and 0 <= adjacent_y < col and visited[adjacent_x][adjacent_y] == False:
+                    diff = abs(height[adjacent_x][adjacent_y] - height[x][y])
+                    if diff <= numDifference:
+                        visited[adjacent_x][adjacent_y] = True
+                        queue.append((adjacent_x, adjacent_y))
+        return False
+            
+        

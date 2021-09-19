@@ -1,0 +1,39 @@
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        # Construct edge adjacency list but records the weight as well
+        edges = collections.defaultdict(list)
+        for u, v, w in times:
+            edges[u].append((v, w))
+        
+        # Use MinHeap to make sure each time we do BFS in Dijistra, 
+        # we always pick the minimum path (Greedy)
+        
+        # Push the starting point in the minHeap
+        # K is the starting vertex and it takes 0 weight to reach there
+        minHeap = [(0, k)]
+        
+        # Keep track of any visited vertex
+        visit = set()
+        
+        maxTime = 0
+        
+        # Standard BFS
+        # Pop the minimum weight path from Heap
+        # Check if visited, if not, add it to visited set and update the maxTime.
+        while minHeap:
+            time, vertex = heapq.heappop(minHeap)
+            if vertex in visit: 
+                continue
+            visit.add(vertex)
+            maxTime = max(maxTime, time)
+            
+            for neighbor, neighborTime in edges[vertex]:
+                if neighbor in visit:
+                    continue
+                # Push the neighbor vertices into MinHeap, but also keep track of the minimum time
+                # to get to current vertex's neighbor from the origin (k) vertex.
+                heapq.heappush(minHeap, (time + neighborTime, neighbor))
+        
+        if len(visit) == n:
+            return maxTime
+        return -1

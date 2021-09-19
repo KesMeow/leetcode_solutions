@@ -1,0 +1,30 @@
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        
+        adj_list = defaultdict(list)
+        indegree = {}
+        for dest, src in prerequisites:
+            adj_list[src].append(dest)
+            indegree[dest] = indegree.get(dest, 0) + 1
+            
+            
+        zero_degree_queue = deque([])
+        for node in range(numCourses):
+            if node not in indegree:
+                zero_degree_queue.append(node)
+        topological_order_result = []
+        
+        while zero_degree_queue:
+            vertex = zero_degree_queue.popleft()
+            topological_order_result.append(vertex)
+            
+            if vertex in adj_list:
+                for neighbor in adj_list[vertex]:
+                    indegree[neighbor] -= 1
+                    
+                    if indegree[neighbor] == 0:
+                        zero_degree_queue.append(neighbor)
+        
+        if len(topological_order_result) == numCourses:
+            return topological_order_result
+        return []
